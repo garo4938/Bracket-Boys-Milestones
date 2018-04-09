@@ -101,3 +101,60 @@ SELECT Name AS 'Participants of Test Tournament 1', Player.MatchNo, Wins, Losses
 	WHERE Admin.Username = 'TourneyAdmin1' 
 		AND Code = 'Tourney1'
 	ORDER BY Player.MatchNo DESC;
+
+
+/* Update Results from Second Round of Matches */
+
+UPDATE Player
+	SET Wins = Wins + 1, MatchNo = CEIL(MatchNo/2) + 4
+	WHERE PlayerID = 1
+		OR PlayerID = 7;
+
+UPDATE Player
+	SET Losses = Losses + 1
+	WHERE PlayerID = 2
+		OR PlayerID = 6;
+
+SELECT Name AS 'Participants of Test Tournament 1', Player.MatchNo, Wins, Losses
+	FROM Player
+	LEFT JOIN Tournament
+		ON Player.TourneyCode = Tournament.Code
+	RIGHT JOIN Admin
+		ON Admin.Username = Tournament.Owner
+	WHERE Admin.Username = 'TourneyAdmin1' 
+		AND Code = 'Tourney1'
+	ORDER BY Player.MatchNo DESC;
+	
+/* Update Results from Final Round of Matches */
+
+UPDATE Player
+	SET Wins = Wins + 1
+	WHERE PlayerID = 7;
+
+UPDATE Player
+	SET Losses = Losses + 1
+	WHERE PlayerID = 1;
+
+SELECT Name AS 'Participants of Test Tournament 1', Player.MatchNo, Wins, Losses
+	FROM Player
+	LEFT JOIN Tournament
+		ON Player.TourneyCode = Tournament.Code
+	RIGHT JOIN Admin
+		ON Admin.Username = Tournament.Owner
+	WHERE Admin.Username = 'TourneyAdmin1' 
+		AND Code = 'Tourney1'
+	ORDER BY Player.MatchNo DESC, Player.Wins DESC;
+
+UPDATE Tournament
+	INNER JOIN Player
+		ON Player.TourneyCode = Tournament.Code
+	SET Winner = (
+		SELECT Name
+			FROM Player
+			WHERE TourneyCode = 'Tourney1'
+			ORDER BY Wins DESC
+			LIMIT 1
+	)
+	WHERE TourneyCode = 'Tourney1';
+
+SELECT * FROM Tournament;
