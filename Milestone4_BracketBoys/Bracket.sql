@@ -1,3 +1,5 @@
+/* Building Tables */
+
 DROP TABLE Player; 
 CREATE TABLE  Player
 (
@@ -31,6 +33,8 @@ CREATE TABLE Admin
 	Email 		varchar(40)
 );
 
+/* Sample Data */
+
 INSERT INTO Player VALUES ('Player 1',1,'Tourney1',0,0,1);
 INSERT INTO Player VALUES ('Player 2',2,'Tourney1',0,0,2);
 INSERT INTO Player VALUES ('Player 3',3,'Tourney1',0,0,1);
@@ -48,16 +52,19 @@ INSERT INTO Player VALUES ('Player 14',14,'Tourney2',0,0,3);
 INSERT INTO Player VALUES ('Player 15',15,'Tourney2',0,0,3);
 INSERT INTO Player VALUES ('Player 16',16,'Tourney2',0,0,4);
 
-
 INSERT INTO Tournament VALUES ('Test Tournament 1','passw','Tourney1',curdate(),8,1,1,NULL,'TourneyAdmin1');
 INSERT INTO Tournament VALUES ('Test Tournament 2','passw','Tourney2',curdate(),8,1,1,NULL,'TourneyAdmin2');
 
 INSERT INTO Admin VALUES ('TourneyAdmin1','password123','name@gmail.com');
 INSERT INTO Admin VALUES ('TourneyAdmin2','password123','diffname@gmail.com');
 
+/* Display Tables */
+
 SELECT * FROM Player;
 SELECT * FROM Tournament;
 SELECT * FROM Admin;
+
+/* Display Players In Table with Corresponding Match Number */
 
 SELECT Name AS 'Participants of Test Tournament 1', Player.MatchNo
 	FROM Player
@@ -69,4 +76,28 @@ SELECT Name AS 'Participants of Test Tournament 1', Player.MatchNo
 		AND TournamentName = 'Test Tournament 1'
 	ORDER BY Player.MatchNo ASC;
 
-	
+/* Update Results from First Round of Matches */
+
+UPDATE Player
+	SET Wins = Wins + 1, MatchNo = CEIL(MatchNo/2) + 4
+	WHERE PlayerID = 1
+		OR PlayerID = 2
+		OR PlayerID = 6
+		OR PlayerID = 7;
+
+UPDATE Player
+	SET Losses = Losses + 1
+	WHERE PlayerID = 3
+		OR PlayerID = 4
+		OR PlayerID = 5
+		OR PlayerID = 8;
+
+SELECT Name AS 'Participants of Test Tournament 1', Player.MatchNo, Wins, Losses
+	FROM Player
+	LEFT JOIN Tournament
+		ON Player.TourneyCode = Tournament.Code
+	RIGHT JOIN Admin
+		ON Admin.Username = Tournament.Owner
+	WHERE Admin.Username = 'TourneyAdmin1' 
+		AND Code = 'Tourney1'
+	ORDER BY Player.MatchNo DESC;
